@@ -1,28 +1,16 @@
-import Link from "next/link";
+import { Heading } from "@/components/heading";
 import { initialTickets } from "@/data";
-import { ticketPath } from "@/paths";
-
-const TICKET_ICONS = {
-  DONE: "✅",
-  IN_PROGRESS: "🚧",
-  OPEN: "🚨",
-};
+import { TicketItem } from "@/features/ticket/components/ticket-item";
 
 export default function TicketsPage() {
   return (
-    <div>
-      <h1 className="text-lg">Tickets</h1>
-      <ul>
+    <div className="flex flex-1 flex-col gap-y-8">
+      <Heading title="Tickets" description="All your tickets at one place" />
+      <div className="flex flex-1 animate-fade-in-from-top flex-col items-center gap-y-4">
         {initialTickets.map((ticket) => (
-          <div key={ticket.id}>
-            <div>{TICKET_ICONS[ticket.status]}</div>
-            <h2 className="text-lg">{ticket.title}</h2>
-            <Link href={ticketPath(ticket.id)} className="text-sm underline">
-              view
-            </Link>
-          </div>
+          <TicketItem key={ticket.id} ticket={ticket} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
