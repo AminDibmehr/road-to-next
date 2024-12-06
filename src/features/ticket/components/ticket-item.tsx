@@ -7,16 +7,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ticketPath } from "@/paths";
 import { deleteTicket } from "../actions/delete-ticket";
 import { TICKET_ICONS } from "../constants";
+import { getTicket } from "../queries/get-ticket";
 
 type TicketItemProps = {
   ticket: Ticket;
   isDetail?: boolean;
 };
 
-export function TicketItem({ ticket, isDetail }: TicketItemProps) {
+export async function TicketItem({ ticket, isDetail }: TicketItemProps) {
   const detailButton = (
     <Button variant="outline" asChild size="icon">
-      <Link href={ticketPath(ticket.id)}>
+      <Link prefetch href={ticketPath(ticket.id)}>
         <LucideSquareArrowOutUpRight className="h-4 w-4" />
       </Link>
     </Button>
