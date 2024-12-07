@@ -1,9 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
-export async function getTicket(ticketId: string) {
+export const getTicket = async (id: string) => {
   return await prisma.ticket.findUnique({
     where: {
-      id: ticketId,
+      id: id,
     },
   });
-}
+};
