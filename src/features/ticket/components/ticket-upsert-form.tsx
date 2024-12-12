@@ -2,14 +2,18 @@
 
 import { Ticket } from "@prisma/client";
 import { Label } from "@radix-ui/react-label";
-import { useActionState } from "react";
-import { toast } from "sonner";
+import { useActionState, useRef } from "react";
+import {
+  DatePicker,
+  ImperativeHandleFromDatePicker,
+} from "@/components/date-picker";
 import { FieldError } from "@/components/form/field-error";
-import { useActionFeedback } from "@/components/form/hooks/use-action-feedback";
+import { Form } from "@/components/form/form";
 import { SubmitButton } from "@/components/form/submit-button";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { fromCent } from "@/utils/currency";
 import { upsertTicket } from "../actions/upsert-ticket";
 
 type TicketUpsertFormProps = {
@@ -22,21 +26,15 @@ export function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
     EMPTY_ACTION_STATE,
   );
 
-  useActionFeedback(actionState, {
-    onSuccess: ({ actionState }) => {
-      if (actionState.message) {
-        toast.success(actionState.message);
-      }
-    },
-    onError: ({ actionState }) => {
-      if (actionState.message) {
-        toast.error(actionState.message);
-      }
-    },
-  });
+  const datePickerImperativeHandleRef =
+    useRef<ImperativeHandleFromDatePicker>(null);
+
+  function handleSuccess() {
+    datePickerImperativeHandleRef.current?.reset();
+  }
 
   return (
-    <form action={action} className="flex flex-col gap-y-2">
+    <Form action={action} actionState={actionState} onSuccess={handleSuccess}>
       <Label htmlFor="title">Title</Label>
       <Input
         type="text"
@@ -58,7 +56,38 @@ export function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
       />
       <FieldError name="content" actionState={actionState} />
 
+      <div className="mb-1 flex gap-x-2">
+        <div className="w-1/2">
+          <Label htmlFor="deadline">Deadline</Label>
+          <DatePicker
+            id="deadline"
+            name="deadline"
+            defaultValue={
+              (actionState.payload?.get("deadline") as string) ??
+              ticket?.deadline
+            }
+            imperativeHandleRef={datePickerImperativeHandleRef}
+          />
+          <FieldError actionState={actionState} name="deadline" />
+        </div>
+
+        <div className="w-1/2">
+          <Label htmlFor="bounty">Bounty ($)</Label>
+          <Input
+            id="bounty"
+            name="bounty"
+            type="number"
+            step="0.01"
+            defaultValue={
+              (actionState.payload?.get("bounty") as string) ??
+              (ticket?.bounty ? fromCent(ticket?.bounty) : "")
+            }
+          />
+          <FieldError actionState={actionState} name="bounty" />
+        </div>
+      </div>
+
       <SubmitButton label={ticket ? "Edit" : "Create"} />
-    </form>
+    </Form>
   );
 }
