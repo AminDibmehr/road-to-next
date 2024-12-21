@@ -1,7 +1,5 @@
 "use client";
 
-import { useQueryStates } from "nuqs";
-import { sortOptions, sortParser } from "@/features/ticket/search-params";
 import {
   Select,
   SelectContent,
@@ -10,35 +8,44 @@ import {
   SelectValue,
 } from "./ui/select";
 
-type Option = {
+export type SortSelectOption = {
   sortKey: string;
   sortValue: string;
   label: string;
 };
 
-type SortSelectProps = {
-  options: Option[];
+type SortObject = {
+  sortKey: string;
+  sortValue: string;
 };
 
-export function SortSelect({ options }: SortSelectProps) {
-  const [sort, setSort] = useQueryStates(sortParser, sortOptions);
+type SortSelectProps = {
+  options: SortSelectOption[];
+  value: SortObject;
+  onChange: (sort: SortObject) => void;
+};
 
-  function handleSort(sortKey: string) {
-    const sortValue = options.find(
-      (option) => option.sortKey === sortKey,
-    )?.sortValue;
+export function SortSelect({ options, value, onChange }: SortSelectProps) {
+  function handleSort(compositeKey: string) {
+    const [sortKey, sortValue] = compositeKey.split("_");
 
-    setSort({ sortKey, sortValue });
+    onChange({ sortKey, sortValue });
   }
 
   return (
-    <Select defaultValue={sort.sortKey} onValueChange={handleSort}>
+    <Select
+      defaultValue={value.sortKey + "_" + value.sortValue}
+      onValueChange={handleSort}
+    >
       <SelectTrigger>
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
         {options.map((option) => (
-          <SelectItem key={option.sortKey} value={option.sortKey}>
+          <SelectItem
+            key={option.sortKey + option.sortValue}
+            value={option.sortKey + "_" + option.sortValue}
+          >
             {option.label}
           </SelectItem>
         ))}

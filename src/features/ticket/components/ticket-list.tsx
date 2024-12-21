@@ -1,9 +1,10 @@
 import { Placeholder } from "@/components/placeholder";
-import { SearchInput } from "@/components/search-input";
-import { SortSelect } from "@/components/sort-select";
 import { getTickets } from "../queries/get-tickets";
 import { ParsedSearchParams } from "../search-params";
 import { TicketItem } from "./ticket-item";
+import { TicketPagination } from "./ticket-pagination";
+import { TicketSearchInput } from "./ticket-search-input";
+import { TicketSortSelect } from "./ticket-sort-select";
 
 type TicketListProps = {
   userId?: string;
@@ -11,15 +12,19 @@ type TicketListProps = {
 };
 
 export async function TicketList({ userId, searchParams }: TicketListProps) {
-  const tickets = await getTickets(userId, searchParams);
+  const { list: tickets, metadata: ticketMetadata } = await getTickets(
+    userId,
+    searchParams,
+  );
 
   return (
     <div className="flex flex-1 animate-fade-in-from-top flex-col items-center gap-y-4">
       <div className="flex w-full max-w-[420px] gap-x-2">
-        <SearchInput placeholder="Search tickets..." />
-        <SortSelect
+        <TicketSearchInput placeholder="Search tickets..." />
+        <TicketSortSelect
           options={[
             { sortKey: "createdAt", sortValue: "desc", label: "Newest" },
+            { sortKey: "createdAt", sortValue: "asc", label: "Oldest" },
             { sortKey: "bounty", sortValue: "desc", label: "Bounty" },
           ]}
         />
@@ -29,6 +34,9 @@ export async function TicketList({ userId, searchParams }: TicketListProps) {
       ) : (
         <Placeholder label="No tickets found" />
       )}
+      <div className="w-full max-w-[420px]">
+        <TicketPagination paginatedTicketMetadata={ticketMetadata} />
+      </div>
     </div>
   );
 }

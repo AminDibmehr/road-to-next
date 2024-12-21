@@ -9,7 +9,7 @@ import { TicketUpsertForm } from "@/features/ticket/components/ticket-upsert-for
 import { searchParamsCache } from "@/features/ticket/search-params";
 
 type TicketsPageProps = {
-  searchParams: Promise<SearchParams>;
+  searchParams: SearchParams;
 };
 
 export default async function TicketsPage({ searchParams }: TicketsPageProps) {
