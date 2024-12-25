@@ -44,7 +44,7 @@ export function SubmitButton({
         >
           {cloneElement(icon, {
             className: "h-4 w-4",
-          })}
+          } as React.DOMAttributes<HTMLElement>)}
         </span>
       ) : null}
     </Button>

@@ -4,7 +4,7 @@ type Entity = {
   userId: string | null;
 };
 
-export async function isOwner(
+export function isOwner(
   authUser: AuthUser | null | undefined,
   entity: Entity | null | undefined,
 ) {

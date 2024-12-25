@@ -8,7 +8,7 @@ import { TicketSortSelect } from "./ticket-sort-select";
 
 type TicketListProps = {
   userId?: string;
-  searchParams: ParsedSearchParams;
+  searchParams: Promise<ParsedSearchParams>;
 };
 
 export async function TicketList({ userId, searchParams }: TicketListProps) {

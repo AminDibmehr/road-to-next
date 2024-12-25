@@ -1,10 +1,13 @@
+import { getAuth } from "@/features/auth/actions/get-auth";
+import { isOwner } from "@/features/auth/utils/is-owner";
 import { prisma } from "@/lib/prisma";
 import { ParsedSearchParams } from "../search-params";
 
 export async function getTickets(
   userId: string | undefined,
-  searchParams: Promise<ParsedSearchParams>,
+  searchParams: Promise<ParsedSearchParams> | ParsedSearchParams,
 ) {
+  const { user } = await getAuth();
   const search = (await searchParams).search;
   const sortKey = (await searchParams).sortKey;
   const sortValue = (await searchParams).sortValue;
@@ -44,7 +47,10 @@ export async function getTickets(
   ]);
 
   return {
-    list: tickets,
+    list: tickets.map((ticket) => ({
+      ...ticket,
+      isOwner: isOwner(user, ticket),
+    })),
     metadata: {
       count,
       hasNextPage: count > skip + take,

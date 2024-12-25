@@ -26,7 +26,7 @@ export function SidebarItem({ isOpen, navItem, isActive }: SidebarItemProps) {
       >
         {cloneElement(navItem.icon, {
           className: "h-5 w-5",
-        })}
+        } as React.DOMAttributes<HTMLElement>)}
         <span
           className={cn(
             "absolute left-12 text-base duration-200",
