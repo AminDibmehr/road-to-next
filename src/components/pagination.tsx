@@ -1,5 +1,6 @@
 "use client";
 
+import { PaginatedData } from "@/types/pagination";
 import { Button } from "./ui/button";
 import {
   Select,
@@ -17,10 +18,7 @@ type PageAndSize = {
 type PaginationProps = {
   pagination: PageAndSize;
   onPagination: (pagination: PageAndSize) => void;
-  paginatedMetadata: {
-    count: number;
-    hasNextPage: boolean;
-  };
+  paginatedMetadata: PaginatedData<unknown>["metadata"];
 };
 
 export function Pagination({

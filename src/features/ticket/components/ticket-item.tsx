@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import clsx from "clsx";
 import {
   LucideMoreVertical,
@@ -17,12 +16,11 @@ import {
 import { ticketEditPath, ticketPath } from "@/paths";
 import { toCurrencyFromCent } from "@/utils/currency";
 import { TICKET_ICONS } from "../constants";
+import { TicketWithMetadata } from "../types";
 import { TicketMoreMenu } from "./TicketMoreMenu";
 
 type TicketItemProps = {
-  ticket: Prisma.TicketGetPayload<{
-    include: { user: { select: { username: true } } };
-  }> & { isOwner: boolean };
+  ticket: TicketWithMetadata;
   isDetail?: boolean;
   comments?: React.ReactNode;
 };
