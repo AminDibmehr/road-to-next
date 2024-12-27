@@ -7,11 +7,12 @@ import { getTicket } from "@/features/ticket/queries/get-ticket";
 import { homePath } from "@/paths";
 import NotFound from "./not-found";
 
-type Params = Promise<{ ticketId: string }>;
-
-export default async function TicketPage(props: { params: Params }) {
-  const params = await props.params;
-  const ticketId = params.ticketId;
+export default async function TicketPage({
+  params,
+}: {
+  params: Promise<{ ticketId: string }>;
+}) {
+  const { ticketId } = await params;
   const ticketPromise = getTicket(ticketId);
   const commentsPromise = getComments(ticketId);
 
