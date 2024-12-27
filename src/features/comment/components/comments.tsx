@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 import { CardCompact } from "@/components/card-compact";
-import { Button } from "@/components/ui/button";
 import { PaginatedData } from "@/types/pagination";
 import { getComments } from "../queries/get-comments";
 import { CommentWithMetadata } from "../types";
@@ -16,26 +17,47 @@ type CommentsProps = {
 };
 
 export function Comments({ ticketId, paginatedComments }: CommentsProps) {
-  const [comments, setComments] = useState(paginatedComments.list);
-  const [metadata, setMetadata] = useState(paginatedComments.metadata);
+  const queryKey = ["comments", ticketId];
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey,
+      queryFn: ({ pageParam }) => getComments(ticketId, pageParam),
+      initialPageParam: undefined as undefined | string,
+      getNextPageParam: (lastPage) =>
+        lastPage.metadata.hasNextPage ? lastPage.metadata.cursor : undefined,
+      initialData: {
+        pages: [
+          {
+            list: paginatedComments.list,
+            metadata: paginatedComments.metadata,
+          },
+        ],
+        pageParams: [undefined],
+      },
+    });
 
-  async function handleMore() {
-    const morePaginatedComments = await getComments(ticketId, metadata.cursor);
-    const moreComments = morePaginatedComments.list;
+  const queryClient = useQueryClient();
 
-    setComments([...comments, ...moreComments]);
-    setMetadata(morePaginatedComments.metadata);
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const comments = data.pages.flatMap((page) => page.list);
+
+  // function handleMore() {
+  //   fetchNextPage();
+  // }
+
+  function handleDeleteComment() {
+    queryClient.invalidateQueries({ queryKey });
   }
 
-  function handleDeleteComment(id: string) {
-    setComments((prevComments) =>
-      prevComments.filter((comment) => comment.id !== id),
-    );
-  }
-
-  function handleCreateComment(comment: CommentWithMetadata | undefined) {
-    if (!comment) return;
-    setComments((prevComments) => [comment, ...prevComments]);
+  function handleCreateComment() {
+    queryClient.invalidateQueries({ queryKey });
   }
 
   return (
@@ -71,13 +93,22 @@ export function Comments({ ticketId, paginatedComments }: CommentsProps) {
         ))}
       </div>
 
-      <div className="ml-8 flex flex-col justify-center">
-        {metadata.hasNextPage && (
-          <Button variant="ghost" onClick={handleMore}>
+      <div ref={ref}>
+        {!hasNextPage && (
+          <p className="text-right text-xs italic">No more comments</p>
+        )}
+      </div>
+      {/* <div className="ml-8 flex flex-col justify-center">
+        {hasNextPage && (
+          <Button
+            variant="ghost"
+            onClick={handleMore}
+            disabled={isFetchingNextPage}
+          >
             More
           </Button>
         )}
-      </div>
+      </div> */}
     </>
   );
 }

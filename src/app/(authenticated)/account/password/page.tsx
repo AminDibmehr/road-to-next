@@ -1,5 +1,5 @@
-import { Heading } from "@/components/heading";
 import { AccountTabs } from "@/app/(authenticated)/account/_navigation/tabs";
+import { Heading } from "@/components/heading";
 
 export default function PasswordPage() {
   return (

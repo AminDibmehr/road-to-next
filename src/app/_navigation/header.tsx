@@ -4,9 +4,9 @@ import { LucideKanban } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { homePath, signInPath, signUpPath } from "@/paths";
-import { AccountDropdown } from "./account-dropdown";
 import { ModeToggle } from "../../components/theme/theme-switcher";
 import { buttonVariants } from "../../components/ui/button";
+import { AccountDropdown } from "./account-dropdown";
 
 export function Header() {
   const { user, isFetched } = useAuth();
