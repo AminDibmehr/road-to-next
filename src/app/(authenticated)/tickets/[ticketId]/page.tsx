@@ -9,12 +9,9 @@ import NotFound from "./not-found";
 
 type Params = Promise<{ ticketId: string }>;
 
-type TicketPageProps = {
-  params: Params;
-};
-
-export default async function TicketPage({ params }: TicketPageProps) {
-  const { ticketId } = await params;
+export default async function TicketPage(props: { params: Params }) {
+  const params = await props.params;
+  const ticketId = params.ticketId;
   const ticketPromise = getTicket(ticketId);
   const commentsPromise = getComments(ticketId);
 
